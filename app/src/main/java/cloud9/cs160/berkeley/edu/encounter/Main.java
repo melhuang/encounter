@@ -104,11 +104,40 @@ public class Main extends Activity {
         }
     }
 
-    public void sendNotification(View v) {
-        String friend = "Jeffrey Zhang";
+    public void meetupRequest(View v) {
+        String friend = "Anna Lee";
 
         String[] message = new String[1];
-        message[0] = "NEARBY";
+        message[0] = "wants to meet up";
+        // Create a NotificationTextCard
+        NotificationTextCard notificationCard = new NotificationTextCard(System.currentTimeMillis(),
+                friend, message);
+
+        // Draw divider between lines of text
+        notificationCard.setShowDivider(false);
+        // Vibrate to alert user when showing the notification
+        notificationCard.setVibeAlert(true);
+        RemoteToqNotification notification = new RemoteToqNotification(this, notificationCard);
+
+        try {
+            // Send the notification
+            mDeckOfCardsManager.sendNotification(notification);
+            Toast.makeText(this, "Sent Notification", Toast.LENGTH_SHORT).show();
+        } catch (RemoteDeckOfCardsException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Failed to send Notification", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void nudgeRequest(View v) {
+
+    }
+
+    public void sendNotification(View v) {
+        String friend = "Anna Lee";
+
+        String[] message = new String[1];
+        message[0] = "just wanted to say hey";
         // Create a NotificationTextCard
         NotificationTextCard notificationCard = new NotificationTextCard(System.currentTimeMillis(),
                 friend, message);

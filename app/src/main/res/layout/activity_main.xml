@@ -9,35 +9,56 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:background="@color/encounter_green"
     tools:context=".Main" >
-
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="center_horizontal">
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/install_button"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Install"
-            android:layout_gravity="center_horizontal"
-            android:onClick="install"/>
+            android:orientation="horizontal"
+            android:layout_gravity="center_horizontal">
 
-        <Button
-            android:id="@+id/uninstall_button"
+            <Button
+                android:id="@+id/install_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Install"
+                android:onClick="install"/>
+
+            <Button
+                android:id="@+id/uninstall_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Uninstall"
+                android:onClick="uninstall"/>
+
+            <Button
+                android:id="@+id/send_notif_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nearby Notification"
+                android:onClick="sendNotification"/>
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Uninstall"
-            android:onClick="uninstall"
-            android:layout_gravity="center_horizontal"/>
+            android:orientation="horizontal">
+            <Button
+                android:id="@+id/meetup_request_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Meetup Request"
+                android:onClick="meetupRequest"/>
+            <Button
+                android:id="@+id/nudge_request_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nudge Request"
+                android:onClick="nudgeRequest"/>
 
-        <Button
-            android:id="@+id/send_notif_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Send Notification"
-            android:onClick="sendNotification"
-            android:layout_gravity="center_horizontal"/>
+            </LinearLayout>
     </LinearLayout>
 </LinearLayout>
