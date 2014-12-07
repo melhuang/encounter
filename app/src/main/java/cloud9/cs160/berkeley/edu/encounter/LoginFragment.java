@@ -107,4 +107,8 @@ public class LoginFragment extends Fragment {
         public void onFragmentInteraction(Uri uri);
     }
 
+    public void login(View v) {
+
+    }
+
 }
