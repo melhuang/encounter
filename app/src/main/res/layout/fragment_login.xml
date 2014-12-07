@@ -6,13 +6,38 @@
     tools:context="cloud9.cs160.berkeley.edu.encounter.LoginFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="encounter"
-        android:textSize="50dp"
-        android:textColor="#FFF"
-        android:gravity="center_horizontal"
-        android:layout_marginTop="150dp"/>
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="encounter"
+            android:textSize="65dp"
+            android:textColor="#FFF"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="160dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="50dp"
+                android:id="@+id/fb_login_button"
+                android:textSize="20sp"
+                android:text="Log in with Facebook"
+                android:textColor="@android:color/white"
+                android:background="#3b5998"
+                />
+        </LinearLayout>
+
+    </LinearLayout>
 
 </FrameLayout>
