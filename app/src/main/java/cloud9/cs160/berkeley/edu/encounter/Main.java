@@ -41,7 +41,10 @@ public class Main extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
+
+//        setContentView(R.layout.fragment_login);
 
         deckOfCardsManagerListener= new DeckOfCardsManagerListenerImpl();
         deckOfCardsEventListener= new DeckOfCardsEventListenerImpl();
@@ -65,6 +68,10 @@ public class Main extends Activity {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void login(View v) {
+        setContentView(R.layout.activity_main);
     }
 
     /**
@@ -126,7 +133,7 @@ public class Main extends Activity {
 
     private RemoteDeckOfCards createDeckOfCards(){
         ListCard listCard= new ListCard();
-        Bitmap character;
+        Bitmap image;
         CardImage cardImage;
 
         SimpleTextCard dnd= new SimpleTextCard("dnd");
@@ -159,15 +166,25 @@ public class Main extends Activity {
         nudge.setReceivingEvents(true);
         listCard.add(nudge);
 
-        SimpleTextCard come= new SimpleTextCard("Come to me");
+        SimpleTextCard come= new SimpleTextCard("Come");
         come.setHeaderText("Come to me");
 //        joan.setTitleText("Draw a megaphone");
 //        character = BitmapFactory.decodeResource(getResources(),
 //                R.drawable.joan_baez_toq);
 //        cardImage = new CardImage("joan", character);
 //        joan.setCardImage(mRemoteResourceStore, cardImage);
-        come.setReceivingEvents(true);
+        come.setReceivingEvents(false);
         listCard.add(come);
+
+        SimpleTextCard directions= new SimpleTextCard("Directions");
+        directions.setHeaderText("Directions");
+        directions.setTitleText("30 feet");
+        image = BitmapFactory.decodeResource(getResources(),
+                R.drawable.arrow);
+        cardImage = new CardImage("joan", image);
+        directions.setCardImage(mRemoteResourceStore, cardImage);
+        directions.setReceivingEvents(true);
+        listCard.add(directions);
 
 //        SimpleTextCard newPic = new SimpleTextCard("new");
 //        listCard.add(newPic);
