@@ -138,41 +138,21 @@ public class Main extends Activity {
 
         SimpleTextCard dnd= new SimpleTextCard("dnd");
         dnd.setHeaderText("Do Not Disturb");
-//        mario.setTitleText("Express your own version of free speech in a drawing");
-//        character = BitmapFactory.decodeResource(getResources(),
-//                R.drawable.mario_savio_toq);
-//        cardImage = new CardImage("mario", character);
-//        mario.setCardImage(mRemoteResourceStore, cardImage);
         dnd.setReceivingEvents(true);
         listCard.add(dnd);
 
         SimpleTextCard meetup= new SimpleTextCard("Meetup");
         meetup.setHeaderText("Meetup");
-//        mario.setTitleText("Express your own version of free speech in a drawing");
-//        character = BitmapFactory.decodeResource(getResources(),
-//                R.drawable.mario_savio_toq);
-//        cardImage = new CardImage("mario", character);
-//        mario.setCardImage(mRemoteResourceStore, cardImage);
         meetup.setReceivingEvents(true);
         listCard.add(meetup);
 
         SimpleTextCard nudge= new SimpleTextCard("Nudge");
         nudge.setHeaderText("Nudge");
-//        jack.setTitleText("Draw 'FSM'");
-//        character = BitmapFactory.decodeResource(getResources(),
-//                R.drawable.jack_weinberg_toq);
-//        cardImage = new CardImage("jack", character);
-//        jack.setCardImage(mRemoteResourceStore, cardImage);
         nudge.setReceivingEvents(true);
         listCard.add(nudge);
 
         SimpleTextCard come= new SimpleTextCard("Come");
         come.setHeaderText("Come to me");
-//        joan.setTitleText("Draw a megaphone");
-//        character = BitmapFactory.decodeResource(getResources(),
-//                R.drawable.joan_baez_toq);
-//        cardImage = new CardImage("joan", character);
-//        joan.setCardImage(mRemoteResourceStore, cardImage);
         come.setReceivingEvents(false);
         listCard.add(come);
 
@@ -186,8 +166,6 @@ public class Main extends Activity {
         directions.setReceivingEvents(true);
         listCard.add(directions);
 
-//        SimpleTextCard newPic = new SimpleTextCard("new");
-//        listCard.add(newPic);
 
         return new RemoteDeckOfCards(this, listCard);
     }
