@@ -17,8 +17,7 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="center_horizontal">
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/install_button"
@@ -35,30 +34,75 @@
                 android:onClick="uninstall"/>
 
             <Button
-                android:id="@+id/send_notif_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Nearby Notification"
-                android:onClick="sendNotification"/>
+                android:text="Reset Deck"
+                android:id="@+id/updateDeck"
+                android:onClick="updateDeck"/>
+
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/send_notif_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nearby Notification"
+                android:onClick="sendNotification"/>
+
             <Button
                 android:id="@+id/meetup_request_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Meetup Request"
                 android:onClick="meetupRequest"/>
+
+        </LinearLayout>
+
+
+        <Button
+            android:id="@+id/nudge_request_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nudge Request"
+            android:onClick="nudgeRequest"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
             <Button
-                android:id="@+id/nudge_request_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Nudge Request"
-                android:onClick="nudgeRequest"/>
+                android:text="Coming to you"
+                android:id="@+id/button"
+                android:onClick="comingToYou"/>
 
-            </LinearLayout>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Come to me"
+                android:id="@+id/button2"
+                android:onClick="comeToMe"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Friend's name:"
+            android:id="@+id/textView"
+            android:layout_marginTop="20dp" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/editText" />
+
     </LinearLayout>
 </LinearLayout>

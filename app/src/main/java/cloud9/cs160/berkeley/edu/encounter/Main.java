@@ -1,14 +1,16 @@
 package cloud9.cs160.berkeley.edu.encounter;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.qualcomm.toq.smartwatch.api.v1.deckofcards.DeckOfCardsEventListener;
@@ -29,6 +31,10 @@ public class Main extends Activity {
     private final static String PREFS_FILE= "prefs_file";
     private final static String DECK_OF_CARDS_KEY= "deck_of_cards_key";
     private final static String DECK_OF_CARDS_VERSION_KEY= "deck_of_cards_version_key";
+    public static final String NUDGE = "Nudge";
+    public static final String LETS_MEET = "Let's Meet";
+    public static final String COMING_TO_YOU = "Coming to you";
+    public static final String COME_TO_ME = "Come to me";
 
     private DeckOfCardsManagerListener deckOfCardsManagerListener;
     private DeckOfCardsEventListener deckOfCardsEventListener;
@@ -38,23 +44,55 @@ public class Main extends Activity {
     private DeckOfCardsEventListener mListener;
     private CardImage[] mCardImages;
 
+    private String friend = "Melissa Huang";
+    private EditText friendEdit;
+    private String appName = "Encounter";
+    private boolean dndStatus = false;
+    private boolean invited = false;
+    private boolean inviting = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+        friendEdit = (EditText) findViewById(R.id.editText);
+        friendEdit.setText(friend);
+        friendEdit.addTextChangedListener(
+                new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
 
-//        setContentView(R.layout.fragment_login);
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+                        friend = charSequence.toString();
+                        ListCard listCard = mRemoteDeckOfCards.getListCard();
+                        SimpleTextCard card = (SimpleTextCard) listCard.get("encounter");
+                        card.setTitleText(friend);
+                        updateDeck(null);
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                }
+        );
 
         deckOfCardsManagerListener= new DeckOfCardsManagerListenerImpl();
         deckOfCardsEventListener= new DeckOfCardsEventListenerImpl();
 
 
         mDeckOfCardsManager = DeckOfCardsManager.getInstance(getApplicationContext());
+        mDeckOfCardsManager.addDeckOfCardsEventListener(deckOfCardsEventListener);
         // Create the resource store for icons and images
         mRemoteResourceStore= new RemoteResourceStore();
 //        ListCard listCard= new ListCard();
 //        mRemoteDeckOfCards = new RemoteDeckOfCards(this, listCard);
+
+        updateDeckOfCardsFromUI();
     }
 
     @Override
@@ -78,7 +116,6 @@ public class Main extends Activity {
      * Installs applet to Toq watch if app is not yet installed
      */
     public void install(View v) {
-        updateDeckOfCardsFromUI();
         boolean isInstalled = true;
 
         try {
@@ -128,7 +165,40 @@ public class Main extends Activity {
         if (mRemoteDeckOfCards == null) {
             mRemoteDeckOfCards = createDeckOfCards();
         }
+    }
 
+    public void updateDeck(View v) {
+        if (v != null) {
+            invited = false;
+            inviting = false;
+            mRemoteDeckOfCards = createDeckOfCards();
+        }
+        try {
+            mDeckOfCardsManager.updateDeckOfCards(mRemoteDeckOfCards, mRemoteResourceStore);
+        } catch (RemoteDeckOfCardsException e) {
+            e.printStackTrace();
+            log(e.getMessage());
+        }
+    }
+
+    private void setActive(SimpleTextCard dnd) {
+        dnd.setTitleText("Active");
+        String[] menuOptions = {"Do Not Disturb"};
+        dnd.setMenuOptions(menuOptions);
+        dndStatus = false;
+    }
+
+    private void setDND(SimpleTextCard dnd) {
+        dnd.setTitleText("Do Not Disturb");
+        String[] menuOptions = {"Active"};
+        dnd.setMenuOptions(menuOptions);
+        dndStatus = true;
+    }
+
+    private void toggleStatus(SimpleTextCard dnd) {
+        if (dndStatus) {
+            setActive(dnd);
+        } else setDND(dnd);
     }
 
     private RemoteDeckOfCards createDeckOfCards(){
@@ -137,70 +207,85 @@ public class Main extends Activity {
         CardImage cardImage;
 
         SimpleTextCard dnd= new SimpleTextCard("dnd");
-        dnd.setHeaderText("Do Not Disturb");
+        dnd.setHeaderText("Status");
+        setActive(dnd);
         dnd.setReceivingEvents(true);
         listCard.add(dnd);
 
-        SimpleTextCard meetup= new SimpleTextCard("Meetup");
-        meetup.setHeaderText("Meetup");
-        meetup.setReceivingEvents(true);
-        listCard.add(meetup);
+        SimpleTextCard encounterCard = new SimpleTextCard("encounter");
+        encounterCard.setHeaderText("New Encounter");
+        encounterCard.setTitleText(friend);
+        encounterCard.setReceivingEvents(true);
+        String[] options = {NUDGE, LETS_MEET};
+        encounterCard.setMenuOptions(options);
+        listCard.add(encounterCard);
 
-        SimpleTextCard nudge= new SimpleTextCard("Nudge");
-        nudge.setHeaderText("Nudge");
-        nudge.setReceivingEvents(true);
-        listCard.add(nudge);
-
-        SimpleTextCard come= new SimpleTextCard("Come");
-        come.setHeaderText("Come to me");
-        come.setReceivingEvents(false);
-        listCard.add(come);
-
-        SimpleTextCard directions= new SimpleTextCard("Directions");
-        directions.setHeaderText("Directions");
-        directions.setTitleText("30 feet");
-        image = BitmapFactory.decodeResource(getResources(),
-                R.drawable.arrow);
-        cardImage = new CardImage("joan", image);
-        directions.setCardImage(mRemoteResourceStore, cardImage);
-        directions.setReceivingEvents(true);
-        listCard.add(directions);
-
+//        SimpleTextCard meetup= new SimpleTextCard("Meetup");
+//        meetup.setHeaderText("Meetup");
+//        meetup.setReceivingEvents(true);
+//        encounterCard.add(meetup);
+//
+//        SimpleTextCard nudge= new SimpleTextCard("Nudge");
+//        nudge.setHeaderText("Nudge");
+//        nudge.setReceivingEvents(true);
+//        encounterCard.add(nudge);
 
         return new RemoteDeckOfCards(this, listCard);
     }
 
+    private boolean meetup() {
+        if (invited && inviting) {
+            ListCard listCard = mRemoteDeckOfCards.getListCard();
+            SimpleTextCard encounterCard = (SimpleTextCard) listCard.get("encounter");
+            encounterCard.setHeaderText("Meeting with");
+            encounterCard.setTitleText(friend);
+            String[] options = {COMING_TO_YOU, COME_TO_ME};
+            encounterCard.setMenuOptions(options);
+
+            String[] messages = {"30 feet"};
+            encounterCard.setMessageText(messages);
+            Bitmap image = BitmapFactory.decodeResource(getResources(),
+                    R.drawable.arrow);
+            image = Bitmap.createScaledBitmap(image, 250, 288, false);
+            CardImage cardImage = new CardImage("joan", image);
+            encounterCard.setCardImage(mRemoteResourceStore, cardImage);
+
+            updateDeck(null);
+
+            sendNotification("Invite accepted.");
+            return true;
+        }
+        return false;
+    }
+
+    public void comingToYou(View v) {
+        sendNotification("says: coming to you.");
+    }
+
+    public void comeToMe(View v) {
+        sendNotification("says: come to me.");
+    }
 
     public void meetupRequest(View v) {
-        String friend = "Anna Lee";
-
-        String[] message = new String[1];
-        message[0] = "wants to meet up.";
-        // Create a NotificationTextCard
-        NotificationTextCard notificationCard = new NotificationTextCard(System.currentTimeMillis(),
-                friend, message);
-
-        // Draw divider between lines of text
-        notificationCard.setShowDivider(false);
-        // Vibrate to alert user when showing the notification
-        notificationCard.setVibeAlert(true);
-        RemoteToqNotification notification = new RemoteToqNotification(this, notificationCard);
-
-        try {
-            // Send the notification
-            mDeckOfCardsManager.sendNotification(notification);
-            Toast.makeText(this, "Sent Notification", Toast.LENGTH_SHORT).show();
-        } catch (RemoteDeckOfCardsException e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Failed to send Notification", Toast.LENGTH_SHORT).show();
-        }
+        sendNotification("wants to meet up.");
+        invited = true;
+        meetup();
     }
 
     public void nudgeRequest(View v) {
-        String friend = "Anna Lee";
+        sendNotification("nudged you.");
+    }
 
+    public void sendNotification(View v) {
+        sendNotification("is nearby.");
+    }
+
+    public void sendNotification(String s) {
+        if(dndStatus) {
+            return;
+        }
         String[] message = new String[1];
-        message[0] = "nudged you.";
+        message[0] = s;
         // Create a NotificationTextCard
         NotificationTextCard notificationCard = new NotificationTextCard(System.currentTimeMillis(),
                 friend, message);
@@ -209,6 +294,11 @@ public class Main extends Activity {
         notificationCard.setShowDivider(false);
         // Vibrate to alert user when showing the notification
         notificationCard.setVibeAlert(true);
+        notificationCard.setReceivingEvents(true);
+        if (!invited || !inviting) {
+            String[] options = {NUDGE, LETS_MEET};
+            notificationCard.setMenuOptions(options);
+        }
         RemoteToqNotification notification = new RemoteToqNotification(this, notificationCard);
 
         try {
@@ -219,30 +309,13 @@ public class Main extends Activity {
             e.printStackTrace();
             Toast.makeText(this, "Failed to send Notification", Toast.LENGTH_SHORT).show();
         }
-    }
 
-    public void sendNotification(View v) {
-        String friend = "Anna Lee";
-
-        String[] message = new String[1];
-        message[0] = "is nearby.";
-        // Create a NotificationTextCard
-        NotificationTextCard notificationCard = new NotificationTextCard(System.currentTimeMillis(),
-                friend, message);
-
-        // Draw divider between lines of text
-        notificationCard.setShowDivider(false);
-        // Vibrate to alert user when showing the notification
-        notificationCard.setVibeAlert(true);
-        RemoteToqNotification notification = new RemoteToqNotification(this, notificationCard);
-
-        try {
-            // Send the notification
-            mDeckOfCardsManager.sendNotification(notification);
-            Toast.makeText(this, "Sent Notification", Toast.LENGTH_SHORT).show();
-        } catch (RemoteDeckOfCardsException e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Failed to send Notification", Toast.LENGTH_SHORT).show();
+        if (!invited || !inviting) {
+            ListCard listCard = mRemoteDeckOfCards.getListCard();
+            SimpleTextCard card = (SimpleTextCard) listCard.get("encounter");
+            String[] messages = {s};
+            card.setMessageText(messages);
+            updateDeck(null);
         }
     }
 
@@ -338,7 +411,7 @@ public class Main extends Activity {
          * @see com.qualcomm.toq.smartwatch.api.v1.deckofcards.DeckOfCardsEventListener#onCardOpen(java.lang.String)
          */
         public void onCardOpen(final String cardId){
-//            Log.e("onCardOpen", cardId);
+            log("onCardOpen " + cardId);
 
             runOnUiThread(new Runnable(){
                 public void run(){
@@ -358,7 +431,7 @@ public class Main extends Activity {
          * @see com.qualcomm.toq.smartwatch.api.v1.deckofcards.DeckOfCardsEventListener#onCardVisible(java.lang.String)
          */
         public void onCardVisible(final String cardId){
-//            Log.e("onCardVisible", cardId);
+            log("onCardVisible " + cardId);
 
             runOnUiThread(new Runnable(){
                 public void run(){
@@ -371,6 +444,7 @@ public class Main extends Activity {
          * @see com.qualcomm.toq.smartwatch.api.v1.deckofcards.DeckOfCardsEventListener#onCardInvisible(java.lang.String)
          */
         public void onCardInvisible(final String cardId){
+            log("onCardInvisible " + cardId);
             runOnUiThread(new Runnable(){
                 public void run(){
 //                    Toast.makeText(ToqApiDemo.this, getString(R.string.event_card_invisible) + cardId, Toast.LENGTH_SHORT).show();
@@ -382,6 +456,13 @@ public class Main extends Activity {
          * @see com.qualcomm.toq.smartwatch.api.v1.deckofcards.DeckOfCardsEventListener#onCardClosed(java.lang.String)
          */
         public void onCardClosed(final String cardId){
+            log("onCardClosed " + cardId);
+//            if(cardId.equals("encounter")) {
+//                ListCard listCard = mRemoteDeckOfCards.getListCard();
+//                SimpleTextCard card = (SimpleTextCard) listCard.get("encounter");
+//                card.setMessageText(null);
+//                updateDeck(null);
+//            }
             runOnUiThread(new Runnable(){
                 public void run(){
 //                    Toast.makeText(ToqApiDemo.this, getString(R.string.event_card_closed) + cardId, Toast.LENGTH_SHORT).show();
@@ -393,7 +474,46 @@ public class Main extends Activity {
          * @see com.qualcomm.toq.smartwatch.api.v1.deckofcards.DeckOfCardsEventListener#onMenuOptionSelected(java.lang.String, java.lang.String)
          */
         public void onMenuOptionSelected(final String cardId, final String menuOption){
-//            Log.e("onMenuOptionSelected", cardId + " " + menuOption);
+            log("onMenuOptionSelected " + cardId + " " + menuOption);
+
+            if(cardId.equals("dnd")) {
+                ListCard listCard = mRemoteDeckOfCards.getListCard();
+                SimpleTextCard card = (SimpleTextCard) listCard.get("dnd");
+                toggleStatus(card);
+            } else if (cardId.equals("encounter")) {
+                ListCard listCard = mRemoteDeckOfCards.getListCard();
+                SimpleTextCard card = (SimpleTextCard) listCard.get("encounter");
+                if (menuOption.equals(NUDGE)) {
+                    String[] messages = new String[1];
+                    messages[0] = "Nudged";
+                    card.setMessageText(messages);
+                } else if (menuOption.equals(LETS_MEET)) {
+                    inviting = true;
+                    if (meetup()) {
+                        return;
+                    }
+                    String[] messages = {"Invite Sent"};
+                    card.setMessageText(messages);
+                } else if (menuOption.equals(COMING_TO_YOU)) {
+                    String[] options = {"You said: " + COMING_TO_YOU, COME_TO_ME};
+                    card.setMenuOptions(options);
+                } else if (menuOption.equals(COME_TO_ME)) {
+                    String[] options = {COMING_TO_YOU, "You said: " + COME_TO_ME};
+                    card.setMenuOptions(options);
+                }
+            } else if (cardId.equals(NotificationTextCard.ID)) {
+                if (menuOption.equals(NUDGE)) {
+                    sendNotification("Nudged");
+                } else if (menuOption.equals(LETS_MEET)) {
+                    inviting = true;
+                    if (meetup()) {
+                        return;
+                    }
+                    sendNotification("Invite Sent");
+                }
+            }
+
+            updateDeck(null);
 
             runOnUiThread(new Runnable(){
                 public void run(){
@@ -414,5 +534,9 @@ public class Main extends Activity {
             });
         }
 
+    }
+
+    private void log(String s) {
+        Log.v(appName, s);
     }
 }
