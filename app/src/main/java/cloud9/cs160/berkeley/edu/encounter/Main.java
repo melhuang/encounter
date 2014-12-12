@@ -313,6 +313,7 @@ public class Main extends Activity {
         if (!invited || !inviting) {
             ListCard listCard = mRemoteDeckOfCards.getListCard();
             SimpleTextCard card = (SimpleTextCard) listCard.get("encounter");
+            card.setTitleText(friend);
             String[] messages = {s};
             card.setMessageText(messages);
             updateDeck(null);
@@ -483,6 +484,7 @@ public class Main extends Activity {
             } else if (cardId.equals("encounter")) {
                 ListCard listCard = mRemoteDeckOfCards.getListCard();
                 SimpleTextCard card = (SimpleTextCard) listCard.get("encounter");
+                //card.setTitleText(friend);
                 if (menuOption.equals(NUDGE)) {
                     String[] messages = new String[1];
                     messages[0] = "Nudged";
